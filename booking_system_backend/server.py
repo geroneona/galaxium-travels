@@ -96,6 +96,14 @@ def get_user_id(name: str, email: str) -> UserOut:
     finally:
         db.close()
 
+@mcp.tool()
+def get_discount_by_booking(booking_id: int) -> Union[DiscountOut, None]:
+    """Get discount information for a specific booking."""
+    db = SessionLocal()
+    try:
+        return discount.get_discount_by_booking_id(db, booking_id)
+    finally:
+        db.close()
 
 # Create the MCP HTTP app for mounting
 mcp_app = mcp.http_app()
