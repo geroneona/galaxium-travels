@@ -21,6 +21,20 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
 
   if (!flight) return null;
 
+  // Calculate total price including infant discount
+  const calculateTotalPrice = () => {
+    const basePrice = flight.price;
+    if (infantCount > 1) {
+      // 25% discount per infant for multiple infants
+      const infantDiscount = basePrice * 0.25 * (infantCount-1);
+      return basePrice + infantDiscount;
+    }
+    return basePrice; // No charge for single infant
+  };
+
+  const totalPrice = calculateTotalPrice();
+
+
   const handleConfirmBooking = async () => {
     if (!user) {
       toast.error('Please sign in to book a flight');
@@ -132,7 +146,7 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
             </h4>
           </div>
           <p className="text-xs text-star-white/60 mb-3">
-            Infants (under 2 years) can sit on your lap and don't require a separate seat
+            Infants (under 2 years) can sit on your lap and don't require a separate seat. However, for more than one infant, a 75% discount applies per infant.
           </p>
           <div className="flex items-center gap-4">
             <label className="text-star-white text-sm">Number of infants:</label>
@@ -150,8 +164,8 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
               </span>
               <button
                 type="button"
-                onClick={() => setInfantCount(Math.min(4, infantCount + 1))}
-                disabled={infantCount === 4 || isLoading}
+                onClick={() => setInfantCount(Math.min(8, infantCount + 1))}
+                disabled={infantCount === 8 || isLoading}
                 className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-star-white font-bold transition-colors"
               >
                 +
@@ -160,7 +174,11 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
           </div>
           {infantCount > 0 && (
             <p className="text-xs text-cosmic-purple mt-2">
-              {infantCount} infant{infantCount > 1 ? 's' : ''} selected (no additional charge)
+              {infantCount} infant{infantCount > 1 ? 's' : ''} selected 
+              {infantCount > 1 
+                ? ` (75% discount per infant: +${formatCurrency(flight.price * 0.25 * (infantCount-1))})`
+                : ' (no additional charge)'
+              }
             </p>
           )}
         </div>
@@ -171,9 +189,16 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
             <DollarSign className="text-white" size={24} />
             <span className="text-white font-semibold">Total Price</span>
           </div>
-          <span className="text-2xl font-bold text-white">
-            {formatCurrency(flight.price)}
-          </span>
+          <div className="text-right">
+            {infantCount > 1 && (
+              <div className="text-sm text-white/80 line-through">
+                {formatCurrency(flight.price)}
+              </div>
+            )}
+            <span className="text-2xl font-bold text-white">
+              {formatCurrency(totalPrice)}
+            </span>
+          </div>
         </div>
 
         {/* Actions */}
