@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Flight } from '../../types';
 import { Modal, Button } from '../common';
 import { Plane, Calendar, Clock, DollarSign, Baby } from 'lucide-react';
@@ -18,6 +18,13 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [infantCount, setInfantCount] = useState(0);
+
+  // Reset infant count when modal opens or flight changes
+  useEffect(() => {
+    if (isOpen) {
+      setInfantCount(0);
+    }
+  }, [isOpen, flight?.flight_id]);
 
   if (!flight) return null;
 
