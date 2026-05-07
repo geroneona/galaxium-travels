@@ -12,6 +12,21 @@ interface BookingCardProps {
 }
 
 export const BookingCard = ({ booking, flight, onCancel, isCancelling }: BookingCardProps) => {
+
+  // function to calculate formatCurrency(flight.price) based from infant counts
+  // formula should be if infant is more than 1, then 'infant count' - 1 * 25% of price 
+  // then add back to unit price
+  const calculateTotalPrice = () => {
+
+    const basePrice = flight?.price || 0;
+    const infantCount = booking.infant_count || 0;
+    const discount = infantCount > 1 ? (infantCount - 1) * 0.25 * basePrice : 0;
+    const totalPrice = basePrice + discount;
+    
+    return totalPrice;
+  };
+
+
   const getStatusIcon = () => {
     switch (booking.status) {
       case 'booked':
@@ -94,7 +109,7 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
             <div className="flex items-center justify-between pt-3 border-t border-white/10">
               <span className="text-sm text-star-white/60">Price</span>
               <span className="text-lg font-bold text-star-white">
-                {formatCurrency(flight.price)}
+                {formatCurrency(calculateTotalPrice())}
               </span>
             </div>
           </div>
