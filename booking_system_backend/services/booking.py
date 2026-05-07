@@ -4,8 +4,8 @@ from models import User, Flight, Booking
 from schemas import BookingOut, ErrorResponse
 
 
-def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> BookingOut | ErrorResponse:
-    """Book a seat on a specific flight for a user."""
+def book_flight(db: Session, user_id: int, name: str, flight_id: int, infant_count: int = 0) -> BookingOut | ErrorResponse:
+    """Book a seat on a specific flight for a user with optional infants."""
     # Check flight exists
     flight = db.query(Flight).filter(Flight.flight_id == flight_id).first()
     if not flight:
@@ -15,7 +15,15 @@ def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> Booking
             details=f"The specified flight_id {flight_id} does not exist in our system. Please check the flight_id or use list_flights to see available flights."
         )
 
-    # Check seats available
+    # Validate infant count
+    if infant_count < 0:
+        return ErrorResponse(
+            error="Invalid infant count",
+            error_code="INVALID_INFANT_COUNT",
+            details="Infant count cannot be negative. Please provide a valid number of infants (0 or more)."
+        )
+    
+    # Check seats available (infants don't require separate seats)
     if flight.seats_available < 1:
         return ErrorResponse(
             error="No seats available",
@@ -46,7 +54,8 @@ def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> Booking
         user_id=user_id,
         flight_id=flight_id,
         status="booked",
-        booking_time=datetime.utcnow().isoformat()
+        booking_time=datetime.utcnow().isoformat(),
+        infant_count=infant_count
     )
     db.add(new_booking)
     db.commit()

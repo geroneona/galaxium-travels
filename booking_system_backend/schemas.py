@@ -19,6 +19,7 @@ class BookingRequest(BaseModel):
     user_id: int
     name: str
     flight_id: int
+    infant_count: int = 0
 
 
 class BookingOut(BaseModel):
@@ -27,6 +28,7 @@ class BookingOut(BaseModel):
     flight_id: int
     status: str
     booking_time: str
+    infant_count: int
 
     class Config:
         from_attributes = True

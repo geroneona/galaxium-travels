@@ -1,6 +1,6 @@
 import type { Booking, Flight } from '../../types';
 import { Card, Button } from '../common';
-import { Plane, Calendar, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Plane, Calendar, CheckCircle, XCircle, Clock, Baby } from 'lucide-react';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { motion } from 'framer-motion';
 
@@ -109,6 +109,16 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
           <Calendar size={16} />
           <span>Booked on {formatDate(booking.booking_time)}</span>
         </div>
+
+        {/* Infant Information */}
+        {booking.infant_count > 0 && (
+          <div className="flex items-center gap-2 text-sm text-cosmic-purple mb-4 p-2 rounded-lg bg-cosmic-purple/10">
+            <Baby size={16} />
+            <span>
+              {booking.infant_count} infant{booking.infant_count > 1 ? 's' : ''} traveling
+            </span>
+          </div>
+        )}
 
         {/* Cancel Button */}
         {canCancel && (

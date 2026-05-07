@@ -25,4 +25,5 @@ class Booking(Base):
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
     flight_id = Column(Integer, ForeignKey('flights.flight_id'), nullable=False)
     status = Column(String, nullable=False)
-    booking_time = Column(String, nullable=False) 
+    booking_time = Column(String, nullable=False)
+    infant_count = Column(Integer, nullable=False, default=0)

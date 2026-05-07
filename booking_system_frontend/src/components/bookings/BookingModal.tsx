@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Flight } from '../../types';
 import { Modal, Button } from '../common';
-import { Plane, Calendar, Clock, DollarSign } from 'lucide-react';
+import { Plane, Calendar, Clock, DollarSign, Baby } from 'lucide-react';
 import { formatCurrency, formatDate, calculateDuration } from '../../utils/formatters';
 import { bookFlight, isErrorResponse } from '../../services/api';
 import { useUser } from '../../hooks/useUser';
@@ -17,6 +17,7 @@ interface BookingModalProps {
 export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModalProps) => {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [infantCount, setInfantCount] = useState(0);
 
   if (!flight) return null;
 
@@ -33,6 +34,7 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
         user_id: user.user_id,
         name: user.name,
         flight_id: flight.flight_id,
+        infant_count: infantCount,
       });
 
       if (isErrorResponse(result)) {
@@ -120,6 +122,48 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
             <p className="text-star-white/60 text-sm">{user.email}</p>
           </div>
         )}
+
+        {/* Infant Selection */}
+        <div className="glass-card p-4 bg-white/5">
+          <div className="flex items-center gap-2 mb-3">
+            <Baby className="text-cosmic-purple" size={20} />
+            <h4 className="text-sm font-semibold text-star-white">
+              Traveling with Infants?
+            </h4>
+          </div>
+          <p className="text-xs text-star-white/60 mb-3">
+            Infants (under 2 years) can sit on your lap and don't require a separate seat
+          </p>
+          <div className="flex items-center gap-4">
+            <label className="text-star-white text-sm">Number of infants:</label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setInfantCount(Math.max(0, infantCount - 1))}
+                disabled={infantCount === 0 || isLoading}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-star-white font-bold transition-colors"
+              >
+                -
+              </button>
+              <span className="w-12 text-center text-star-white font-semibold">
+                {infantCount}
+              </span>
+              <button
+                type="button"
+                onClick={() => setInfantCount(Math.min(4, infantCount + 1))}
+                disabled={infantCount === 4 || isLoading}
+                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-star-white font-bold transition-colors"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          {infantCount > 0 && (
+            <p className="text-xs text-cosmic-purple mt-2">
+              {infantCount} infant{infantCount > 1 ? 's' : ''} selected (no additional charge)
+            </p>
+          )}
+        </div>
 
         {/* Price */}
         <div className="flex items-center justify-between p-4 glass-card bg-cosmic-gradient">
