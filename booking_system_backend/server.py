@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from typing import Union
 from db import SessionLocal, init_db, get_db
 from seed import seed
-from services import flight, user, booking
-from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration
+from services import flight, user, booking, discount
+from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration, DiscountOut
 
 
 # ==================== MCP SERVER (for AI agents) ====================
@@ -177,6 +177,24 @@ def register_user_endpoint(request: UserRegistration, db: Session = Depends(get_
 def get_user_endpoint(name: str, email: str, db: Session = Depends(get_db)):
     """Retrieve a user's information by providing both name and email."""
     return user.get_user(db, name, email)
+
+
+@app.get("/discounts", response_model=list[DiscountOut], tags=["Discounts"])
+def get_all_discounts_endpoint(db: Session = Depends(get_db)):
+    """Retrieve all discount records."""
+    return discount.get_all_discounts(db)
+
+
+@app.get("/discounts/booking/{booking_id}", response_model=Union[DiscountOut, None], tags=["Discounts"])
+def get_discount_by_booking_endpoint(booking_id: int, db: Session = Depends(get_db)):
+    """Retrieve discount information for a specific booking."""
+    return discount.get_discount_by_booking_id(db, booking_id)
+
+
+@app.get("/discounts/user/{email}", response_model=list[DiscountOut], tags=["Discounts"])
+def get_discounts_by_user_endpoint(email: str, db: Session = Depends(get_db)):
+    """Retrieve all discount records for a specific user by email."""
+    return discount.get_discounts_by_user_email(db, email)
 
 
 # ==================== MOUNT MCP INTO FASTAPI ====================

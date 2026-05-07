@@ -25,6 +25,22 @@ export interface User {
   email: string;
 }
 
+export interface Discount {
+  discount_id: number;
+  booking_id: number;
+  infant_count: number;
+  original_price: number;
+  discounted_price_per_infant: number;
+  applied_discounted_price_per_infant_count: number;
+  flight_id: number;
+  origin: string;
+  destination: string;
+  departure_time: string;
+  arrival_time: string;
+  name: string;
+  email: string;
+}
+
 // Request/Response types
 export interface BookingRequest {
   user_id: number;

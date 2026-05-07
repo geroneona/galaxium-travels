@@ -1,16 +1,14 @@
-from models import Base, User, Flight, Booking
+from models import Base, User, Flight, Booking, Discount
 from db import engine, SessionLocal
 from datetime import datetime, timedelta
+from sqlalchemy import text
 import random
 
 def seed():
+    # Drop all tables and recreate them to ensure schema is up to date
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
-    # Clear existing data
-    db.query(Booking).delete()
-    db.query(User).delete()
-    db.query(Flight).delete()
-    db.commit()
     # Add demo users
     users = [
         User(name="Alice", email="alice@example.com"),
@@ -41,7 +39,7 @@ def seed():
     ]
     db.add_all(flights)
     db.commit()
-    # Add demo bookings
+    # Add demo bookings with some having infants
     user_ids = [user.user_id for user in db.query(User).all()]
     flight_ids = [flight.flight_id for flight in db.query(Flight).all()]
     statuses = ["booked", "cancelled", "completed"]
@@ -52,9 +50,48 @@ def seed():
         flight_id = random.choice(flight_ids)
         status = random.choice(statuses)
         booking_time = (now - timedelta(days=random.randint(0, 30), hours=random.randint(0, 23))).isoformat() + "Z"
-        bookings.append(Booking(user_id=user_id, flight_id=flight_id, status=status, booking_time=booking_time))
+        # 30% chance of having 1-3 infants
+        infant_count = random.choice([0, 0, 0, 0, 0, 0, 0, 1, 2, 3])
+        bookings.append(Booking(user_id=user_id, flight_id=flight_id, status=status, booking_time=booking_time, infant_count=infant_count))
     db.add_all(bookings)
     db.commit()
+    # Add demo discount records using ORM approach
+    bookings_list = db.query(Booking).all()
+    discounts = []
+    
+    for booking in bookings_list:
+        # Only create discount records for bookings with infants
+        if booking.infant_count > 0:
+            flight = db.query(Flight).filter(Flight.flight_id == booking.flight_id).first()
+            user = db.query(User).filter(User.user_id == booking.user_id).first()
+            
+            if flight and user:
+                # Calculate total price with infant discount logic:
+                # - 1 infant: sits on lap, no additional charge (total = original price)
+                # - 2+ infants: first infant free, additional infants get 25% discount each
+                additional_infants = max(0, booking.infant_count - 1)
+                discount_amount = int(flight.price * 0.25 * additional_infants)
+                total_price = flight.price + discount_amount
+                
+                discount = Discount(
+                    booking_id=booking.booking_id,
+                    infant_count=booking.infant_count,
+                    original_price=flight.price,
+                    discounted_price_per_infant=int(flight.price * 0.25),
+                    applied_discounted_price_per_infant_count=total_price,
+                    flight_id=flight.flight_id,
+                    origin=flight.origin,
+                    destination=flight.destination,
+                    departure_time=flight.departure_time,
+                    arrival_time=flight.arrival_time,
+                    name=user.name,
+                    email=user.email
+                )
+                discounts.append(discount)
+    
+    db.add_all(discounts)
+    db.commit()
+
     db.close()
     print("Database seeded with elaborate demo data!")
 

@@ -53,3 +53,22 @@ class ErrorResponse(BaseModel):
     error: str
     error_code: str
     details: Optional[str] = None
+
+
+class DiscountOut(BaseModel):
+    discount_id: int
+    booking_id: int
+    infant_count: int
+    original_price: int
+    discounted_price_per_infant: int
+    applied_discounted_price_per_infant_count: int
+    flight_id: int
+    origin: str
+    destination: str
+    departure_time: str
+    arrival_time: str
+    name: str
+    email: str
+
+    class Config:
+        from_attributes = True

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
-from models import User, Flight, Booking
+from models import User, Flight, Booking, Discount
 from schemas import BookingOut, ErrorResponse
 
 
@@ -60,6 +60,31 @@ def book_flight(db: Session, user_id: int, name: str, flight_id: int, infant_cou
     db.add(new_booking)
     db.commit()
     db.refresh(new_booking)
+    
+    # Create discount record if booking has infants
+    if infant_count > 0:
+        # Calculate discount pricing
+        additional_infants = max(0, infant_count - 1)
+        discount_amount = int(flight.price * 0.25 * additional_infants)
+        total_price = flight.price + discount_amount
+        
+        discount = Discount(
+            booking_id=new_booking.booking_id,
+            infant_count=infant_count,
+            original_price=flight.price,
+            discounted_price_per_infant=int(flight.price * 0.25),
+            applied_discounted_price_per_infant_count=total_price,
+            flight_id=flight.flight_id,
+            origin=flight.origin,
+            destination=flight.destination,
+            departure_time=flight.departure_time,
+            arrival_time=flight.arrival_time,
+            name=user.name,
+            email=user.email
+        )
+        db.add(discount)
+        db.commit()
+    
     return BookingOut.model_validate(new_booking)
 
 
