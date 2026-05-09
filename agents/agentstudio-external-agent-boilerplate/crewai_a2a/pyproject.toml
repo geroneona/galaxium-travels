@@ -1,0 +1,73 @@
+[project]
+name = "crewai_a2a"
+version = "0.1.0"
+description = "crewai-a2a using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "a2a-sdk[http-server]==0.3.26",
+    "arize-phoenix-otel>=0.14.0",
+    "crewai[bedrock,tools]==1.9.3",
+    "fastapi>=0.128.1",
+    "httpx>=0.28.1",
+    "mcp>=1.23.3",
+    "openinference-instrumentation>=0.1.44",
+    "openinference-instrumentation-crewai>=0.1.18",
+    "pip>=26.0.1",
+    "uvicorn[standard]>=0.40.0",
+]
+
+[project.scripts]
+a2a = "crewai_a2a.main:run_a2a"
+run_crew = "crewai_a2a.main:run"
+train = "crewai_a2a.main:train"
+replay = "crewai_a2a.main:replay"
+test = "crewai_a2a.main:test"
+run_with_trigger = "crewai_a2a.main:run_with_trigger"
+
+[build-system]
+requires = ["setuptools>=80.9", "wheel>0.45"]
+build-backend = "setuptools.build_meta"
+
+[tool.crewai]
+type = "crew"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "pylint>=4.0.4",
+    "pytest>=9.0",
+    "ruff>=0.15.1",
+]
+
+[tool.ruff]
+line-length = 120
+exclude = [".venv"]
+
+[tool.pylint]
+[tool.pylint.main]
+ignore = ["tests", ".venv"]
+
+[tool.pylint.messages_control]
+disable = [
+  "C0114",
+  "C0115",
+  "C0116",
+  "R0903",
+  "W0511",
+  "C0301",
+  # Project-wide ignores requested by user:
+  # W0718: broad-exception-caught (catching Exception)
+  # W1203: logging-fstring-interpolation (use lazy % formatting)
+  # R0913: too-many-arguments
+  # R0917: too-many-positional-arguments
+  "W0718",
+  "W1203",
+  "R0913",
+  "R0917",
+  "W0719",
+  "W0707"
+]
+
+[tool.mypy]
+ignore_missing_imports = true

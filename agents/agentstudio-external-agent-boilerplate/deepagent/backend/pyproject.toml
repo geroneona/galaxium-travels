@@ -1,0 +1,71 @@
+[project]
+name = "a2a-deepagent"
+version = "0.1.0"
+description = "Boilerplate backend for an agentic chat application"
+authors = [ { name = "Your Name", email = "you@example.com" } ]
+
+requires-python = ">=3.13"
+
+dependencies = [
+  "fastapi>=0.128",
+  "uvicorn[standard]>=0.40",
+  "boto3>=1.42",
+  "httpx>=0.28",
+  "a2a-sdk[http-server]==0.3.26",
+  "uvloop>=0.22.1",
+  "deepagents>=0.4.7",
+  "langchain-aws>=1.4.0",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.14",
+  "pylint>=4.0",
+  "pytest>=9.0",
+  "mypy>=1.19.1",
+  "pytest-cov>=7.0.0",
+  "pip>=26.0.1",
+]
+
+## For older tooling compatibility the `dependency-groups` section is present,
+## but pip recognizes PEP 621 `project.optional-dependencies` for extras.
+[project.optional-dependencies]
+lambda = [
+  "mangum>=0.14",
+]
+
+[build-system]
+requires = ["setuptools>=80.9", "wheel>0.45"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 80
+exclude = [".venv", "build"]
+
+[tool.pylint]
+[tool.pylint.main]
+ignore = ["tests", ".venv"]
+
+[tool.pylint.messages_control]
+disable = [
+  "C0114",
+  "C0115",
+  "C0116",
+  "R0903",
+  "W0511",
+  "C0301",
+  # Project-wide ignores requested by user:
+  # W0718: broad-exception-caught (catching Exception)
+  # W1203: logging-fstring-interpolation (use lazy % formatting)
+  # R0913: too-many-arguments
+  # R0917: too-many-positional-arguments
+  "W0718",
+  "W1203",
+  "R0913",
+  "R0917",
+  
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+follow_imports = "silent"

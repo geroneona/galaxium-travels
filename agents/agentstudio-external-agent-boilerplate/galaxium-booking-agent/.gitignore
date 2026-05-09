@@ -1,0 +1,24 @@
+﻿# Environment files
+*.env
+.env.*
+!.env.example
+
+# Nested boilerplate (too deep for Windows paths)
+agentstudio-external-agent-boilerplate/
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/

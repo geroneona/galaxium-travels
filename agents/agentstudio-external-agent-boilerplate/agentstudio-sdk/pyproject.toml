@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentstudio-sdk"
+version = "0.0.1"
+description = "Shared Phoenix / tracing helpers used by boilerplates"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "opentelemetry-api>=1.16.0",
+  "httpx>=0.25.0",
+  "pyjwt[crypto]>=2.10.1",
+  "mcp>=1.23.3",
+  "azure-identity>=1.25.2",
+  "openai>=1.83.0",
+  "mcp>=1.23.1",
+  "crewai>=1.9.3",
+  "openinference-instrumentation>=0.1.46",
+  "arize-phoenix>=4.31.0",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.14",
+  "pylint>=4.0",
+  "pytest>=9.0",
+]
+
+[tool.ruff]
+line-length = 80
+exclude = [".venv", "build"]
+
+[tool.pylint]
+[tool.pylint.main]
+ignore = ["tests", ".venv"]
