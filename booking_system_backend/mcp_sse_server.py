@@ -1,10 +1,10 @@
 """
 MCP SSE Server for IBM Agentic App Studio
-This is a SEPARATE server from server.py (port 8080).
-This MCP server will run on port 8000 and provide tools to IBM Agentic App Studio.
+This is a SEPARATE server from server.py (port 8082).
+This MCP server will run on port 8003 and provide tools to IBM Agentic App Studio.
 
 Run this with: python mcp_sse_server.py
-Then expose it with ngrok: ngrok http 8000
+Then expose it with ngrok: ngrok http 8003
 Use the ngrok URL in IBM Agentic App Studio.
 """
 
@@ -324,17 +324,18 @@ if __name__ == "__main__":
     print("=" * 80)
     print("MCP SSE Server for IBM Agentic App Studio")
     print("=" * 80)
-    print("This is a SEPARATE server from your booking API (port 8080)")
-    print("This MCP server will run on port 8000")
+    print("This is a SEPARATE server from your booking API (port 8082)")
+    print("This MCP server will run on port 8003")
     print()
     print("STEPS TO USE:")
     print("1. Run this server: python mcp_sse_server.py")
-    print("2. In another terminal, expose it: ngrok http 8000")
+    print("2. In another terminal, expose it: ngrok http 8003")
     print("3. Copy the ngrok URL (e.g., https://abc123.ngrok-free.dev)")
     print("4. In IBM Agentic App Studio, use: https://abc123.ngrok-free.dev/sse")
     print("=" * 80)
     
-    # Run the MCP server with SSE transport
-    mcp.run(transport="sse")
+    # Run the MCP server with SSE transport on port 8003
+    # Bind to 0.0.0.0 so WSL can reach it from Windows host
+    mcp.run(transport="sse", port=8003, host="0.0.0.0")
 
 # Made with Bob

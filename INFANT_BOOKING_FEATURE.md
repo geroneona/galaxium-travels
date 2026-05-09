@@ -76,7 +76,7 @@ POST /book
    - Click "Book Now" on any flight
    - In the booking modal, use the +/- buttons to select number of infants
    - Maximum 4 infants per booking
-   - Infants are free (no additional charge)
+   - Infants are free (no additional charge).
    - Click "Confirm Booking"
 
 2. **Viewing Bookings:**

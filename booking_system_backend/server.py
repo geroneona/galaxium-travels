@@ -214,4 +214,5 @@ app.mount("/mcp", mcp_app)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    # Changed from 8080 to 8082 to avoid port conflict with WSL
+    uvicorn.run(app, host="0.0.0.0", port=8082)
