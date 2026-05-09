@@ -3,13 +3,10 @@
 .env.*
 !.env.example
 
-# Nested boilerplate (too deep for Windows paths)
-agentstudio-external-agent-boilerplate/
-
 # Python
 __pycache__/
 *.py[cod]
-*.class
+*$py.class
 .venv/
 venv/
 *.egg-info/

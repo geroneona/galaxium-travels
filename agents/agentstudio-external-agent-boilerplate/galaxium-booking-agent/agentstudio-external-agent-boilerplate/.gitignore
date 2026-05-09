@@ -1,0 +1,7 @@
+.github
+__pycache__
+*-workspace
+.vscode/diff/*
+
+scripts/lib/remote_adapter/python-utils.venv
+.venv
