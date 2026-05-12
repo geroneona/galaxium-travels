@@ -21,6 +21,12 @@ class BookingRequest(BaseModel):
     flight_id: int
 
 
+class ModifyBookingRequest(BaseModel):
+    booking_id: int
+    new_flight_id: int
+    user_id: int
+
+
 class BookingOut(BaseModel):
     booking_id: int
     user_id: int

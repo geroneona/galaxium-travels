@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Booking, Flight } from '../types';
 import { LoadingSpinner, Modal, Button } from '../components/common';
 import { BookingCard } from '../components/bookings/BookingCard';
+import { ModifyBookingModal } from '../components/bookings/ModifyBookingModal';
 import { getUserBookings, getFlights, cancelBooking, isErrorResponse } from '../services/api';
 import { useUser } from '../hooks/useUser';
 import { AlertCircle } from 'lucide-react';
@@ -18,6 +19,8 @@ export const MyBookings = () => {
   const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [bookingToCancel, setBookingToCancel] = useState<number | null>(null);
+  const [showModifyModal, setShowModifyModal] = useState(false);
+  const [bookingToModify, setBookingToModify] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -49,6 +52,14 @@ export const MyBookings = () => {
   const handleCancelClick = (bookingId: number) => {
     setBookingToCancel(bookingId);
     setShowCancelModal(true);
+  };
+
+  const handleModifyClick = (bookingId: number) => {
+    const booking = bookings.find((b) => b.booking_id === bookingId);
+    if (booking) {
+      setBookingToModify(booking);
+      setShowModifyModal(true);
+    }
   };
 
   const handleConfirmCancel = async () => {
@@ -140,6 +151,7 @@ export const MyBookings = () => {
                     booking={booking}
                     flight={getFlightForBooking(booking)}
                     onCancel={handleCancelClick}
+                    onModify={handleModifyClick}
                     isCancelling={cancellingId === booking.booking_id}
                   />
                 ))}
@@ -201,6 +213,18 @@ export const MyBookings = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Modify Booking Modal */}
+      <ModifyBookingModal
+        isOpen={showModifyModal}
+        onClose={() => {
+          setShowModifyModal(false);
+          setBookingToModify(null);
+        }}
+        booking={bookingToModify}
+        currentFlight={bookingToModify ? getFlightForBooking(bookingToModify) : null}
+        onSuccess={loadData}
+      />
     </div>
   );
 };

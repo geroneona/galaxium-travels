@@ -7,7 +7,7 @@ from typing import Union
 from db import SessionLocal, init_db, get_db
 from seed import seed
 from services import flight, user, booking
-from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration
+from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration, ModifyBookingRequest
 
 
 # ==================== MCP SERVER (for AI agents) ====================
@@ -62,6 +62,22 @@ def cancel_booking(booking_id: int) -> BookingOut:
     db = SessionLocal()
     try:
         result = booking.cancel_booking(db, booking_id)
+        if isinstance(result, ErrorResponse):
+            raise Exception(result.details or result.error)
+        return result
+    finally:
+        db.close()
+
+
+@mcp.tool()
+def modify_booking(booking_id: int, new_flight_id: int, user_id: int) -> BookingOut:
+    """Modify an existing booking to a different flight.
+    Requires booking_id, new_flight_id, and user_id for validation.
+    Restores seat to old flight and deducts from new flight if successful.
+    Returns updated booking details or raises an error if modification is not possible."""
+    db = SessionLocal()
+    try:
+        result = booking.modify_booking(db, booking_id, new_flight_id, user_id)
         if isinstance(result, ErrorResponse):
             raise Exception(result.details or result.error)
         return result
@@ -164,6 +180,16 @@ def cancel_booking_endpoint(booking_id: int, db: Session = Depends(get_db)):
     Increments available seats for the flight if successful.
     """
     return booking.cancel_booking(db, booking_id)
+
+
+@app.put("/bookings/{booking_id}/modify", response_model=Union[BookingOut, ErrorResponse], tags=["Bookings"])
+def modify_booking_endpoint(booking_id: int, request: ModifyBookingRequest, db: Session = Depends(get_db)):
+    """Modify an existing booking to a different flight.
+
+    Requires booking_id in path and new_flight_id and user_id in request body.
+    Restores seat to old flight and deducts from new flight if successful.
+    """
+    return booking.modify_booking(db, booking_id, request.new_flight_id, request.user_id)
 
 
 @app.post("/register", response_model=Union[UserOut, ErrorResponse], tags=["Users"])

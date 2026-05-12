@@ -86,3 +86,71 @@ def get_bookings(db: Session, user_id: int) -> list[BookingOut]:
     """Retrieve all bookings for a specific user."""
     bookings = db.query(Booking).filter(Booking.user_id == user_id).all()
     return [BookingOut.model_validate(b) for b in bookings]
+
+
+def modify_booking(db: Session, booking_id: int, new_flight_id: int, user_id: int) -> BookingOut | ErrorResponse:
+    """Modify an existing booking to a different flight."""
+    # Check booking exists
+    booking = db.query(Booking).filter(Booking.booking_id == booking_id).first()
+    if not booking:
+        return ErrorResponse(
+            error="Booking not found",
+            error_code="BOOKING_NOT_FOUND",
+            details=f"Booking with ID {booking_id} not found. The booking may have been deleted or the booking_id may be incorrect."
+        )
+
+    # Verify booking belongs to user
+    if booking.user_id != user_id:
+        return ErrorResponse(
+            error="Unauthorized",
+            error_code="UNAUTHORIZED",
+            details=f"Booking {booking_id} does not belong to user {user_id}. You can only modify your own bookings."
+        )
+
+    # Check booking status
+    if booking.status != "booked":
+        return ErrorResponse(
+            error="Cannot modify booking",
+            error_code="INVALID_STATUS",
+            details=f"Booking {booking_id} has status '{booking.status}' and cannot be modified. Only bookings with status 'booked' can be modified."
+        )
+
+    # Check if trying to modify to the same flight
+    if booking.flight_id == new_flight_id:
+        return ErrorResponse(
+            error="Same flight selected",
+            error_code="SAME_FLIGHT",
+            details=f"The booking is already for flight {new_flight_id}. Please select a different flight to modify the booking."
+        )
+
+    # Check new flight exists
+    new_flight = db.query(Flight).filter(Flight.flight_id == new_flight_id).first()
+    if not new_flight:
+        return ErrorResponse(
+            error="Flight not found",
+            error_code="FLIGHT_NOT_FOUND",
+            details=f"The specified flight_id {new_flight_id} does not exist in our system. Please check the flight_id or use list_flights to see available flights."
+        )
+
+    # Check new flight has available seats
+    if new_flight.seats_available < 1:
+        return ErrorResponse(
+            error="No seats available",
+            error_code="NO_SEATS_AVAILABLE",
+            details=f"Flight {new_flight_id} is fully booked. Please select a different flight or try again later if seats become available."
+        )
+
+    # Get old flight to restore seat
+    old_flight = db.query(Flight).filter(Flight.flight_id == booking.flight_id).first()
+    
+    # Update seat availability
+    if old_flight:
+        old_flight.seats_available += 1  # Restore seat to old flight
+    new_flight.seats_available -= 1  # Deduct seat from new flight
+
+    # Update booking
+    booking.flight_id = new_flight_id
+    
+    db.commit()
+    db.refresh(booking)
+    return BookingOut.model_validate(booking)
