@@ -102,7 +102,7 @@ After setup, you'll have **3 things running**:
 
 3. **Test in IBM Agentic App Studio:**
    - Add MCP Server URL: `https://xyz123.ngrok-free.dev/sse`
-   - Your agent should see tools like `book_flight_remote`
+   - Your agent should see tools like `book_flight`, `list_flights`, `register_user`, etc.
 
 ---
 

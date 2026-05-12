@@ -11,13 +11,9 @@ logger = get_logger(__name__)
 
 class BookingAgent(BaseAgentWithMCP):
     async def init_tools(self) -> None:
-        """Initialize tools but filter out book_flight_remote"""
+        """Initialize tools from MCP server"""
         tools = await self.mcp_server.get_tools_schema()
-        # Filter out book_flight_remote tool
-        self.tools = [
-            t for t in (tools or [])
-            if t.get("toolSpec", {}).get("name") != "book_flight_remote"
-        ]
+        self.tools = tools or []
         self.tool_info = [
             {
                 "name": t["toolSpec"]["name"],
@@ -25,7 +21,7 @@ class BookingAgent(BaseAgentWithMCP):
             }
             for t in self.tools
         ]
-        logger.info(f"BookingAgent loaded {len(self.tools)} tools (filtered out book_flight_remote)")
+        logger.info(f"BookingAgent loaded {len(self.tools)} tools")
 
     async def handle_message(self, state: AgentState) -> AgentState:
         with use_hook_context(agent_name="BookingAgent"):
@@ -44,7 +40,6 @@ IMPORTANT RULES:
 - Call each tool ONLY ONCE per booking request
 - After getting user_id and flight list, IMMEDIATELY call 'book_flight'
 - DO NOT call 'get_user_id' or 'list_flights' multiple times
-- NEVER call 'book_flight_remote' - it will fail!
 
 Available tools:
 - get_user_id(name, email) → returns user_id
