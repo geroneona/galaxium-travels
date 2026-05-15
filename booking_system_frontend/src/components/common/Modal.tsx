@@ -58,11 +58,11 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }: ModalPr
             >
               {/* Header */}
               {title && (
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-                  <h2 className="text-2xl font-bold text-star-white">{title}</h2>
+                <div className="flex items-center justify-between mb-6 pb-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
+                  <h2 className="text-2xl font-bold theme-text">{title}</h2>
                   <button
                     onClick={onClose}
-                    className="text-star-white/70 hover:text-star-white transition-colors"
+                    className="theme-text-muted hover:theme-text transition-colors"
                   >
                     <X size={24} />
                   </button>

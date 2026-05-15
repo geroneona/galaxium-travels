@@ -21,7 +21,7 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
       case 'completed':
         return <CheckCircle className="text-blue-500" size={20} />;
       default:
-        return <Clock className="text-star-white/50" size={20} />;
+        return <Clock className="theme-text-muted" size={20} />;
     }
   };
 
@@ -34,7 +34,7 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
       case 'completed':
         return 'text-blue-500';
       default:
-        return 'text-star-white/50';
+        return 'theme-text-muted';
     }
   };
 
@@ -49,13 +49,13 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
     >
       <Card>
         {/* Header */}
-        <div className="flex items-start justify-between mb-4 pb-4 border-b border-white/10">
+        <div className="flex items-start justify-between mb-4 pb-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-cosmic-gradient">
               <Plane className="text-white" size={20} />
             </div>
             <div>
-              <p className="text-sm text-star-white/60">Booking #{booking.booking_id}</p>
+              <p className="text-sm theme-text-muted">Booking #{booking.booking_id}</p>
               <div className="flex items-center gap-2 mt-1">
                 {getStatusIcon()}
                 <span className={`text-sm font-semibold capitalize ${getStatusColor()}`}>
@@ -70,42 +70,42 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
         {flight ? (
           <div className="space-y-3 mb-4">
             <div>
-              <h3 className="text-xl font-bold text-star-white mb-1">
+              <h3 className="text-xl font-bold theme-text mb-1">
                 {flight.origin} → {flight.destination}
               </h3>
-              <p className="text-sm text-star-white/60">Flight #{flight.flight_id}</p>
+              <p className="text-sm theme-text-muted">Flight #{flight.flight_id}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-star-white/60 mb-1">Departure</p>
-                <p className="text-sm text-star-white font-medium">
+                <p className="text-xs theme-text-muted mb-1">Departure</p>
+                <p className="text-sm theme-text font-medium">
                   {formatDate(flight.departure_time)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-star-white/60 mb-1">Arrival</p>
-                <p className="text-sm text-star-white font-medium">
+                <p className="text-xs theme-text-muted mb-1">Arrival</p>
+                <p className="text-sm theme-text font-medium">
                   {formatDate(flight.arrival_time)}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
-              <span className="text-sm text-star-white/60">Price</span>
-              <span className="text-lg font-bold text-star-white">
+            <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--app-border)' }}>
+              <span className="text-sm theme-text-muted">Price</span>
+              <span className="text-lg font-bold theme-text">
                 {formatCurrency(flight.price)}
               </span>
             </div>
           </div>
         ) : (
           <div className="mb-4">
-            <p className="text-sm text-star-white/60">Flight ID: {booking.flight_id}</p>
+            <p className="text-sm theme-text-muted">Flight ID: {booking.flight_id}</p>
           </div>
         )}
 
         {/* Booking Time */}
-        <div className="flex items-center gap-2 text-sm text-star-white/60 mb-4">
+        <div className="flex items-center gap-2 text-sm theme-text-muted mb-4">
           <Calendar size={16} />
           <span>Booked on {formatDate(booking.booking_time)}</span>
         </div>

@@ -26,7 +26,7 @@ export const Button = ({
   
   const variantClasses = {
     primary: 'bg-cosmic-gradient text-white hover:shadow-lg hover:shadow-cosmic-purple/50',
-    secondary: 'bg-white/10 text-white hover:bg-white/20',
+    secondary: 'btn-secondary',
     danger: 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/50',
   };
   
