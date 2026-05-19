@@ -8,10 +8,11 @@ interface BookingCardProps {
   booking: Booking;
   flight?: Flight;
   onCancel: (bookingId: number) => void;
+  onModify?: (bookingId: number) => void;
   isCancelling?: boolean;
 }
 
-export const BookingCard = ({ booking, flight, onCancel, isCancelling }: BookingCardProps) => {
+export const BookingCard = ({ booking, flight, onCancel, onModify, isCancelling }: BookingCardProps) => {
   const getStatusIcon = () => {
     switch (booking.status) {
       case 'booked':
@@ -110,17 +111,30 @@ export const BookingCard = ({ booking, flight, onCancel, isCancelling }: Booking
           <span>Booked on {formatDate(booking.booking_time)}</span>
         </div>
 
-        {/* Cancel Button */}
+        {/* Action Buttons */}
         {canCancel && (
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => onCancel(booking.booking_id)}
-            isLoading={isCancelling}
-            className="w-full"
-          >
-            Cancel Booking
-          </Button>
+          <div className="flex gap-2">
+            {onModify && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => onModify(booking.booking_id)}
+                disabled={isCancelling}
+                className="flex-1"
+              >
+                Modify Booking
+              </Button>
+            )}
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => onCancel(booking.booking_id)}
+              isLoading={isCancelling}
+              className="flex-1"
+            >
+              Cancel Booking
+            </Button>
+          </div>
         )}
       </Card>
     </motion.div>

@@ -31,6 +31,12 @@ export interface BookingRequest {
   flight_id: number;
 }
 
+export interface ModifyBookingRequest {
+  booking_id: number;
+  new_flight_id: number;
+  user_id: number;
+}
+
 export interface UserRegistration {
   name: string;
   email: string;

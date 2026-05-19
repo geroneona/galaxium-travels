@@ -4,6 +4,7 @@ import type {
   Booking,
   User,
   BookingRequest,
+  ModifyBookingRequest,
   UserRegistration,
   ErrorResponse,
 } from '../types';
@@ -97,6 +98,19 @@ export const cancelBooking = async (
 ): Promise<Booking | ErrorResponse> => {
   const response = await api.post<Booking | ErrorResponse>(
     `/cancel/${bookingId}`
+  );
+  return response.data;
+};
+
+/**
+ * Modify an existing booking to a different flight
+ */
+export const modifyBooking = async (
+  data: ModifyBookingRequest
+): Promise<Booking | ErrorResponse> => {
+  const response = await api.put<Booking | ErrorResponse>(
+    `/bookings/${data.booking_id}/modify`,
+    data
   );
   return response.data;
 };
