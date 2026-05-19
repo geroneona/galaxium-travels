@@ -79,8 +79,8 @@ export const Starfield = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: 'linear-gradient(to bottom, #030712, #0A1929)' }}
+      className="fixed inset-0 pointer-events-none z-0 theme-starfield"
+      style={{ background: 'transparent' }}
     />
   );
 };

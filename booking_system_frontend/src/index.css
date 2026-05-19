@@ -2,12 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
+/* IBM Carbon Design System integration */
 @layer base {
+  :root {
+    --app-bg: #0a1929;
+    --app-bg-accent: rgba(99, 102, 241, 0.16);
+    --app-text: #f9fafb;
+    --app-text-muted: rgba(249, 250, 251, 0.72);
+    --app-surface: rgba(255, 255, 255, 0.06);
+    --app-surface-hover: rgba(255, 255, 255, 0.12);
+    --app-border: rgba(255, 255, 255, 0.12);
+    --app-input-bg: rgba(255, 255, 255, 0.05);
+    --app-header-bg: rgba(10, 25, 41, 0.72);
+    --app-star-opacity: 1;
+  }
+
+  [data-carbon-theme='white'] {
+    --app-bg: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+    --app-bg-accent: rgba(15, 98, 254, 0.1);
+    --app-text: #161616;
+    --app-text-muted: rgba(22, 22, 22, 0.7);
+    --app-surface: rgba(255, 255, 255, 0.92);
+    --app-surface-hover: rgba(255, 255, 255, 0.98);
+    --app-border: rgba(82, 82, 82, 0.16);
+    --app-input-bg: rgba(255, 255, 255, 0.98);
+    --app-header-bg: rgba(255, 255, 255, 0.88);
+    --app-star-opacity: 0.08;
+  }
+
+  [data-carbon-theme='g10'] {
+    --app-bg: linear-gradient(180deg, #f4f4f4 0%, #e8edf3 100%);
+    --app-bg-accent: rgba(105, 41, 196, 0.1);
+    --app-text: #161616;
+    --app-text-muted: rgba(22, 22, 22, 0.72);
+    --app-surface: rgba(255, 255, 255, 0.78);
+    --app-surface-hover: rgba(255, 255, 255, 0.9);
+    --app-border: rgba(82, 82, 82, 0.18);
+    --app-input-bg: rgba(255, 255, 255, 0.86);
+    --app-header-bg: rgba(244, 244, 244, 0.86);
+    --app-star-opacity: 0.12;
+  }
+
+  [data-carbon-theme='g90'] {
+    --app-bg: linear-gradient(180deg, #0a1929 0%, #111827 100%);
+    --app-bg-accent: rgba(99, 102, 241, 0.16);
+    --app-text: #f9fafb;
+    --app-text-muted: rgba(249, 250, 251, 0.72);
+    --app-surface: rgba(255, 255, 255, 0.06);
+    --app-surface-hover: rgba(255, 255, 255, 0.12);
+    --app-border: rgba(255, 255, 255, 0.12);
+    --app-input-bg: rgba(255, 255, 255, 0.05);
+    --app-header-bg: rgba(10, 25, 41, 0.72);
+    --app-star-opacity: 1;
+  }
+
+  [data-carbon-theme='g100'] {
+    --app-bg: linear-gradient(180deg, #000000 0%, #161616 100%);
+    --app-bg-accent: rgba(255, 131, 43, 0.14);
+    --app-text: #f4f4f4;
+    --app-text-muted: rgba(244, 244, 244, 0.72);
+    --app-surface: rgba(38, 38, 38, 0.86);
+    --app-surface-hover: rgba(56, 56, 56, 0.94);
+    --app-border: rgba(255, 255, 255, 0.16);
+    --app-input-bg: rgba(38, 38, 38, 0.92);
+    --app-header-bg: rgba(22, 22, 22, 0.88);
+    --app-star-opacity: 0.45;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-space-dark text-star-white antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
+    background: var(--app-bg);
+    color: var(--app-text);
+    @apply antialiased transition-colors duration-300;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at top right, var(--app-bg-accent), transparent 35%),
+      radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.08), transparent 30%);
+    z-index: 0;
   }
 
   * {
@@ -17,26 +102,73 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl;
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    color: var(--app-text);
+    @apply backdrop-blur-md rounded-xl transition-colors duration-300;
+  }
+
+  .theme-surface-hover {
+    background: var(--app-surface-hover);
+  }
+
+  .theme-text {
+    color: var(--app-text);
+  }
+
+  .theme-text-muted {
+    color: var(--app-text-muted);
+  }
+
+  .theme-header {
+    background: var(--app-header-bg);
+    border-color: var(--app-border);
+  }
+
+  .theme-input {
+    background: var(--app-input-bg);
+    border-color: var(--app-border);
+    color: var(--app-text);
+  }
+
+  .theme-input::placeholder {
+    color: var(--app-text-muted);
+  }
+
+  .theme-starfield {
+    opacity: var(--app-star-opacity);
+    transition: opacity 0.3s ease;
   }
 
   .btn-primary {
-    @apply bg-cosmic-gradient text-white font-semibold py-3 px-6 rounded-lg 
+    @apply bg-cosmic-gradient text-white font-semibold py-3 px-6 rounded-lg
            hover:shadow-lg hover:shadow-cosmic-purple/50 transition-all duration-300
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-white/10 text-white font-semibold py-3 px-6 rounded-lg 
-           hover:bg-white/20 transition-all duration-300
+    background: var(--app-surface);
+    border: 1px solid var(--app-border);
+    color: var(--app-text);
+    @apply font-semibold py-3 px-6 rounded-lg transition-all duration-300
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  .btn-secondary:hover {
+    background: var(--app-surface-hover);
+  }
+
   .input-field {
-    @apply w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
-           text-star-white placeholder-gray-400
+    background: var(--app-input-bg);
+    border: 1px solid var(--app-border);
+    color: var(--app-text);
+    @apply w-full rounded-lg px-4 py-3
            focus:outline-none focus:ring-2 focus:ring-cosmic-purple focus:border-transparent
            transition-all duration-200;
+  }
+
+  .input-field::placeholder {
+    color: var(--app-text-muted);
   }
 }
 

@@ -22,16 +22,16 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
     >
       <Card className="h-full flex flex-col">
         {/* Route Header */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between mb-4 pb-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-cosmic-gradient">
               <Plane className="text-white" size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-star-white">
+              <h3 className="text-xl font-bold theme-text">
                 {flight.origin} → {flight.destination}
               </h3>
-              <p className="text-sm text-star-white/60">
+              <p className="text-sm theme-text-muted">
                 Flight #{flight.flight_id}
               </p>
             </div>
@@ -43,8 +43,8 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
           {/* Departure & Arrival */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-star-white/60 mb-1">Departure</p>
-              <p className="text-sm font-medium text-star-white">
+              <p className="text-xs theme-text-muted mb-1">Departure</p>
+              <p className="text-sm font-medium theme-text">
                 {formatDate(flight.departure_time, 'MMM dd, yyyy')}
               </p>
               <p className="text-lg font-bold text-cosmic-purple">
@@ -52,8 +52,8 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
               </p>
             </div>
             <div>
-              <p className="text-xs text-star-white/60 mb-1">Arrival</p>
-              <p className="text-sm font-medium text-star-white">
+              <p className="text-xs theme-text-muted mb-1">Arrival</p>
+              <p className="text-sm font-medium theme-text">
                 {formatDate(flight.arrival_time, 'MMM dd, yyyy')}
               </p>
               <p className="text-lg font-bold text-cosmic-purple">
@@ -63,7 +63,7 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
           </div>
 
           {/* Duration */}
-          <div className="flex items-center gap-2 text-star-white/70">
+          <div className="flex items-center gap-2 theme-text-muted">
             <Clock size={16} />
             <span className="text-sm">
               Duration: {calculateDuration(flight.departure_time, flight.arrival_time)}
@@ -73,16 +73,16 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
           {/* Price */}
           <div className="flex items-center gap-2">
             <DollarSign size={16} className="text-alien-green" />
-            <span className="text-2xl font-bold text-star-white">
+            <span className="text-2xl font-bold theme-text">
               {formatCurrency(flight.price)}
             </span>
-            <span className="text-sm text-star-white/60">per seat</span>
+            <span className="text-sm theme-text-muted">per seat</span>
           </div>
 
           {/* Seats Available */}
           <div className="flex items-center gap-2">
-            <Users size={16} className={isLowSeats ? 'text-solar-orange' : 'text-star-white/70'} />
-            <span className={`text-sm ${isLowSeats ? 'text-solar-orange font-semibold' : 'text-star-white/70'}`}>
+            <Users size={16} className={isLowSeats ? 'text-solar-orange' : 'theme-text-muted'} />
+            <span className={`text-sm ${isLowSeats ? 'text-solar-orange font-semibold' : 'theme-text-muted'}`}>
               {isSoldOut ? 'Sold Out' : `${flight.seats_available} seats available`}
             </span>
           </div>

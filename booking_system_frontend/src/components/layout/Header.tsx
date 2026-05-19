@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Rocket, User, LogOut } from 'lucide-react';
 import { useUser } from '../../hooks/useUser';
 import { Button } from '../common';
+import { ThemeSwitcher } from '../common/ThemeSwitcher';
 import { motion } from 'framer-motion';
 
 export const Header = () => {
@@ -11,7 +12,7 @@ export const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 glass-card border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-30 glass-card theme-header border-b">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -34,7 +35,7 @@ export const Header = () => {
               className={`text-sm font-medium transition-colors ${
                 isActive('/')
                   ? 'text-cosmic-purple'
-                  : 'text-star-white/70 hover:text-star-white'
+                  : 'theme-text-muted hover:theme-text'
               }`}
             >
               Home
@@ -44,7 +45,7 @@ export const Header = () => {
               className={`text-sm font-medium transition-colors ${
                 isActive('/flights')
                   ? 'text-cosmic-purple'
-                  : 'text-star-white/70 hover:text-star-white'
+                  : 'theme-text-muted hover:theme-text'
               }`}
             >
               Flights
@@ -55,7 +56,7 @@ export const Header = () => {
                 className={`text-sm font-medium transition-colors ${
                   isActive('/bookings')
                     ? 'text-cosmic-purple'
-                    : 'text-star-white/70 hover:text-star-white'
+                    : 'theme-text-muted hover:theme-text'
                 }`}
               >
                 My Bookings
@@ -65,11 +66,12 @@ export const Header = () => {
 
           {/* User Section */}
           <div className="flex items-center gap-4">
+            <ThemeSwitcher />
             {user ? (
               <div className="flex items-center gap-3">
                 <div className="hidden md:flex items-center gap-2 text-sm">
                   <User size={16} className="text-cosmic-purple" />
-                  <span className="text-star-white">{user.name}</span>
+                  <span className="theme-text">{user.name}</span>
                 </div>
                 <Button
                   variant="secondary"
@@ -96,7 +98,7 @@ export const Header = () => {
             className={`text-sm font-medium transition-colors ${
               isActive('/')
                 ? 'text-cosmic-purple'
-                : 'text-star-white/70 hover:text-star-white'
+                : 'theme-text-muted hover:theme-text'
             }`}
           >
             Home
@@ -106,7 +108,7 @@ export const Header = () => {
             className={`text-sm font-medium transition-colors ${
               isActive('/flights')
                 ? 'text-cosmic-purple'
-                : 'text-star-white/70 hover:text-star-white'
+                : 'theme-text-muted hover:theme-text'
             }`}
           >
             Flights
@@ -117,7 +119,7 @@ export const Header = () => {
               className={`text-sm font-medium transition-colors ${
                 isActive('/bookings')
                   ? 'text-cosmic-purple'
-                  : 'text-star-white/70 hover:text-star-white'
+                  : 'theme-text-muted hover:theme-text'
               }`}
             >
               My Bookings
