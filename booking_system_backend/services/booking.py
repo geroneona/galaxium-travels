@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
-from models import User, Flight, Booking
+from models import User, Flight, Booking, Discount
 from schemas import BookingOut, ErrorResponse
 
 
-def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> BookingOut | ErrorResponse:
-    """Book a seat on a specific flight for a user."""
+def book_flight(db: Session, user_id: int, name: str, flight_id: int, infant_count: int = 0) -> BookingOut | ErrorResponse:
+    """Book a seat on a specific flight for a user with optional infants."""
     # Check flight exists
     flight = db.query(Flight).filter(Flight.flight_id == flight_id).first()
     if not flight:
@@ -15,7 +15,15 @@ def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> Booking
             details=f"The specified flight_id {flight_id} does not exist in our system. Please check the flight_id or use list_flights to see available flights."
         )
 
-    # Check seats available
+    # Validate infant count
+    if infant_count < 0:
+        return ErrorResponse(
+            error="Invalid infant count",
+            error_code="INVALID_INFANT_COUNT",
+            details="Infant count cannot be negative. Please provide a valid number of infants (0 or more)."
+        )
+    
+    # Check seats available (infants don't require separate seats)
     if flight.seats_available < 1:
         return ErrorResponse(
             error="No seats available",
@@ -46,11 +54,37 @@ def book_flight(db: Session, user_id: int, name: str, flight_id: int) -> Booking
         user_id=user_id,
         flight_id=flight_id,
         status="booked",
-        booking_time=datetime.utcnow().isoformat()
+        booking_time=datetime.utcnow().isoformat(),
+        infant_count=infant_count
     )
     db.add(new_booking)
     db.commit()
     db.refresh(new_booking)
+    
+    # Create discount record if booking has infants
+    if infant_count > 0:
+        # Calculate discount pricing
+        additional_infants = max(0, infant_count - 1)
+        discount_amount = int(flight.price * 0.25 * additional_infants)
+        total_price = flight.price + discount_amount
+        
+        discount = Discount(
+            booking_id=new_booking.booking_id,
+            infant_count=infant_count,
+            original_price=flight.price,
+            discounted_price_per_infant=int(flight.price * 0.25),
+            applied_discounted_price_per_infant_count=total_price,
+            flight_id=flight.flight_id,
+            origin=flight.origin,
+            destination=flight.destination,
+            departure_time=flight.departure_time,
+            arrival_time=flight.arrival_time,
+            name=user.name,
+            email=user.email
+        )
+        db.add(discount)
+        db.commit()
+    
     return BookingOut.model_validate(new_booking)
 
 

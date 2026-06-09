@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from typing import Union
 from db import SessionLocal, init_db, get_db
 from seed import seed
-from services import flight, user, booking
-from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration
+from services import flight, user, booking, discount
+from schemas import FlightOut, BookingOut, UserOut, ErrorResponse, BookingRequest, UserRegistration, DiscountOut
 
 
 # ==================== MCP SERVER (for AI agents) ====================
@@ -28,14 +28,14 @@ def list_flights() -> list[FlightOut]:
 
 
 @mcp.tool()
-def book_flight(user_id: int, name: str, flight_id: int) -> BookingOut:
-    """Book a seat on a specific flight for a user.
-    Requires user_id, name, and flight_id.
-    Decrements available seats if successful.
+def book_flight(user_id: int, name: str, flight_id: int, infant_count: int = 0) -> BookingOut:
+    """Book a seat on a specific flight for a user with optional infants.
+    Requires user_id, name, and flight_id. Optionally specify infant_count (default 0).
+    Decrements available seats if successful. Infants don't require separate seats.
     Returns booking details or raises an error if booking is not possible."""
     db = SessionLocal()
     try:
-        result = booking.book_flight(db, user_id, name, flight_id)
+        result = booking.book_flight(db, user_id, name, flight_id, infant_count)
         if isinstance(result, ErrorResponse):
             raise Exception(result.details or result.error)
         return result
@@ -96,6 +96,14 @@ def get_user_id(name: str, email: str) -> UserOut:
     finally:
         db.close()
 
+@mcp.tool()
+def get_discount_by_booking(booking_id: int) -> Union[DiscountOut, None]:
+    """Get discount information for a specific booking."""
+    db = SessionLocal()
+    try:
+        return discount.get_discount_by_booking_id(db, booking_id)
+    finally:
+        db.close()
 
 # Create the MCP HTTP app for mounting
 mcp_app = mcp.http_app()
@@ -144,11 +152,12 @@ def get_flights(db: Session = Depends(get_db)):
 
 @app.post("/book", response_model=Union[BookingOut, ErrorResponse], tags=["Bookings"])
 def book_flight_endpoint(request: BookingRequest, db: Session = Depends(get_db)):
-    """Book a seat on a specific flight for a user.
+    """Book a seat on a specific flight for a user with optional infants.
 
-    Requires user_id, name, and flight_id. Decrements available seats if successful.
+    Requires user_id, name, and flight_id. Optionally specify infant_count (default 0).
+    Decrements available seats if successful. Infants don't require separate seats.
     """
-    return booking.book_flight(db, request.user_id, request.name, request.flight_id)
+    return booking.book_flight(db, request.user_id, request.name, request.flight_id, request.infant_count)
 
 
 @app.get("/bookings/{user_id}", response_model=list[BookingOut], tags=["Bookings"])
@@ -178,6 +187,24 @@ def get_user_endpoint(name: str, email: str, db: Session = Depends(get_db)):
     return user.get_user(db, name, email)
 
 
+@app.get("/discounts", response_model=list[DiscountOut], tags=["Discounts"])
+def get_all_discounts_endpoint(db: Session = Depends(get_db)):
+    """Retrieve all discount records."""
+    return discount.get_all_discounts(db)
+
+
+@app.get("/discounts/booking/{booking_id}", response_model=Union[DiscountOut, None], tags=["Discounts"])
+def get_discount_by_booking_endpoint(booking_id: int, db: Session = Depends(get_db)):
+    """Retrieve discount information for a specific booking."""
+    return discount.get_discount_by_booking_id(db, booking_id)
+
+
+@app.get("/discounts/user/{email}", response_model=list[DiscountOut], tags=["Discounts"])
+def get_discounts_by_user_endpoint(email: str, db: Session = Depends(get_db)):
+    """Retrieve all discount records for a specific user by email."""
+    return discount.get_discounts_by_user_email(db, email)
+
+
 # ==================== MOUNT MCP INTO FASTAPI ====================
 
 app.mount("/mcp", mcp_app)
@@ -187,4 +214,5 @@ app.mount("/mcp", mcp_app)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    # Changed from 8080 to 8082 to avoid port conflict with WSL
+    uvicorn.run(app, host="0.0.0.0", port=8082)

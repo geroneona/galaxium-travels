@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Repository-local pre-commit hook.
+#
+# Usage:
+#  - As a git hook (no args): runs checks only for projects with staged changes.
+#  - Manually: pass --all to run checks for all projects.
+
+ROOT_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo "${PWD}")
+cd "${ROOT_DIR}"
+
+run_frontend() {
+  echo "== frontend: npm audit, lint, format =="
+  (cd frontend && npm audit)
+  (cd frontend && npm run lint)
+  (cd frontend && npm run format)
+}
+
+run_langgraph() {
+  echo "== langgraph: make lint, make format =="
+  (cd langgraph && make lint)
+  (cd langgraph && make format)
+}
+
+run_crewai() {
+  echo "== crewai_a2a: make lint, make format =="
+  (cd crewai_a2a && make lint)
+  (cd crewai_a2a && make format)
+}
+
+if [ "${1-}" = "--all" ] || [ "${1-}" = "all" ]; then
+  run_frontend
+  run_langgraph
+  run_crewai
+  exit 0
+fi
+
+# Determine staged files and which projects to test
+STAGED_FILES=$(git diff --cached --name-only --relative)
+
+if [ -z "${STAGED_FILES}" ]; then
+  echo "No staged files, running all checks by default."
+  run_frontend || exit 1
+  run_langgraph || exit 1
+  run_crewai || exit 1
+  exit 0
+fi
+
+DO_FRONTEND=0
+DO_LANGGRAPH=0
+DO_CREWAI=0
+
+while IFS= read -r f; do
+  case "${f}" in
+    frontend/*) DO_FRONTEND=1 ;;
+    langgraph/*) DO_LANGGRAPH=1 ;;
+    crewai_a2a/*) DO_CREWAI=1 ;;
+  esac
+done <<< "${STAGED_FILES}"
+
+if [ ${DO_FRONTEND} -eq 1 ]; then
+  run_frontend || exit 1
+fi
+if [ ${DO_LANGGRAPH} -eq 1 ]; then
+  run_langgraph || exit 1
+fi
+if [ ${DO_CREWAI} -eq 1 ]; then
+  run_crewai || exit 1
+fi
+
+exit 0

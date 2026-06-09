@@ -1,0 +1,7 @@
+from .agent import agent
+
+result = agent.invoke({"messages": [{"role": "user", "content": "What is langgraph?"}]})
+
+# Print the agent's response
+print(result["messages"][-1].content)
+

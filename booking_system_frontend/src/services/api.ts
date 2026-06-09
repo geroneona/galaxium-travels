@@ -6,11 +6,12 @@ import type {
   BookingRequest,
   UserRegistration,
   ErrorResponse,
+  Discount,
 } from '../types';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8082',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -98,6 +99,36 @@ export const cancelBooking = async (
   const response = await api.post<Booking | ErrorResponse>(
     `/cancel/${bookingId}`
   );
+  return response.data;
+};
+
+// ==================== Discount Endpoints ====================
+
+/**
+ * Get all discounts
+ */
+export const getAllDiscounts = async (): Promise<Discount[]> => {
+  const response = await api.get<Discount[]>('/discounts');
+  return response.data;
+};
+
+/**
+ * Get discount by booking ID
+ */
+export const getDiscountByBooking = async (
+  bookingId: number
+): Promise<Discount | null> => {
+  const response = await api.get<Discount | null>(`/discounts/booking/${bookingId}`);
+  return response.data;
+};
+
+/**
+ * Get discounts by user email
+ */
+export const getDiscountsByUserEmail = async (
+  email: string
+): Promise<Discount[]> => {
+  const response = await api.get<Discount[]>(`/discounts/user/${email}`);
   return response.data;
 };
 

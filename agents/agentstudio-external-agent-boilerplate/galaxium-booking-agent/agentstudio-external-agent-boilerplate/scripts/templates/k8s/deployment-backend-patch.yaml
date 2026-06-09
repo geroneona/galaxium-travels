@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-agent
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: agent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+          env:
+            - name: HOME
+              value: /tmp
+            - name: XDG_DATA_HOME
+              value: /tmp/.local/share
+            - name: A2A_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: external-agent-secrets
+                  key: A2A_BEARER_TOKEN
+                  optional: false
+          envFrom:
+            - configMapRef:
+                name: external-agent-config
+            - secretRef:
+                name: external-agent-secrets
+                optional: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http

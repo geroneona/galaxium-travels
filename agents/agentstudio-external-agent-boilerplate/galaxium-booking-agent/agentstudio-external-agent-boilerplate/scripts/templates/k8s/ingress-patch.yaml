@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: external-agent
+  annotations:
+    ica4aa.io/external-dns: "enabled"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-3:043673801888:certificate/f5c23d72-f59a-4f38-a673-fa217fa21a40
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+spec:
+  ingressClassName: alb
+  rules:
+    - host: <AGENT_NAME>.shared-dev.agents.enterprise-advantage-emea.com
+      http:
+        paths:
+          - path: /.well-known
+            pathType: Prefix
+            backend:
+              service:
+                name: external-agent
+                port:
+                  number: 80
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: external-agent
+                port:
+                  number: 80
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: external-agent
+                port:
+                  number: 80
+          - path: /ready
+            pathType: Prefix
+            backend:
+              service:
+                name: external-agent
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: external-agent-frontend
+                port:
+                  number: 80

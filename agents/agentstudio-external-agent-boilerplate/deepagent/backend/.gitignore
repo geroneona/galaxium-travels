@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+cache/
+*.pyc
+.env*
+!.env.example
+.vimrc
+.coverage
+
+a2a_deepagent.egg-info
+requirements.txt
+test-server-log.txt

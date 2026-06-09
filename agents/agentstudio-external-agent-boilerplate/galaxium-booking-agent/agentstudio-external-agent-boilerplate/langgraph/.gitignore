@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+cache/
+*.pyc
+.env*
+!.env.example
+.vimrc
+.coverage
+
+agentic_chat_backend.egg-info
+requirements.txt

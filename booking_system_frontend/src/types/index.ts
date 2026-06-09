@@ -16,10 +16,27 @@ export interface Booking {
   flight_id: number;
   status: 'booked' | 'cancelled' | 'completed';
   booking_time: string;
+  infant_count: number;
 }
 
 export interface User {
   user_id: number;
+  name: string;
+  email: string;
+}
+
+export interface Discount {
+  discount_id: number;
+  booking_id: number;
+  infant_count: number;
+  original_price: number;
+  discounted_price_per_infant: number;
+  applied_discounted_price_per_infant_count: number;
+  flight_id: number;
+  origin: string;
+  destination: string;
+  departure_time: string;
+  arrival_time: string;
   name: string;
   email: string;
 }
@@ -29,6 +46,7 @@ export interface BookingRequest {
   user_id: number;
   name: string;
   flight_id: number;
+  infant_count?: number;
 }
 
 export interface UserRegistration {
